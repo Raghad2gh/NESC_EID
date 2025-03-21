@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>المفاعل النووي للعيد 🎉</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            text-align: center;
+            background-color: #2f1241;
+            color: white;
+            font-family: 'Amiri', serif;
+        }
+
+        button {
+            background: gold;
+            color: #2f1241;
+            font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: orange;
+        }
+
+        #explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        canvas {
+            display: none;
+            margin-top: 20px;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الصفحة الأولى: إدخال الاسم -->
+    <div id="page1">
+        <h2>أدخل اسمك</h2>
+        <input type="text" id="nameInput" placeholder="اكتب اسمك">
+        <br><br>
+        <button onclick="goToChargingPage()">متابعة</button>
+    </div>
+
+    <!-- الصفحة الثانية: شحن المفاعل -->
+    <div id="page2" style="display: none;">
+        <h2>اضغط لشحن المفاعل النووي</h2>
+        <button onclick="startCharging()">اضغط هنا</button>
+
+        <div id="energy-bar" style="width: 80%; height: 25px; background: gray; margin: 20px auto; border-radius: 10px; overflow: hidden;">
+            <div id="energy-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, yellow, orange); transition: width 0.3s;"></div>
+        </div>
+    </div>
+
+    <!-- انفجار نووي -->
+    <div id="explosion"></div>
+
+    <!-- صورة المعايدة -->
+    <canvas id="eidCanvas"></canvas>
+
+    <script>
+        let userName = "";
+
+        function goToChargingPage() {
+            userName = document.getElementById("nameInput").value.trim();
+            if (userName === "") {
+                alert("اكتب اسمك أولاً!");
+                return;
+            }
+
+            document.getElementById("page1").style.display = "none";
+            document.getElementById("page2").style.display = "block";
+        }
+
+        function startCharging() {
+            let energy = 0;
+            let energyFill = document.getElementById("energy-fill");
+            let button = document.querySelector("#page2 button");
+
+            button.disabled = true;
+            button.innerText = "جاري الشحن... ⚡";
+
+            let interval = setInterval(() => {
+                energy += 10;
+                energyFill.style.width = energy + "%";
+
+                if (energy >= 100) {
+                    clearInterval(interval);
+                    triggerExplosion();
+                }
+            }, 300);
+        }
+
+        function triggerExplosion() {
+            let explosion = document.getElementById("explosion");
+
+            explosion.style.opacity = "1";
+            explosion.style.width = "500vw";
+            explosion.style.height = "500vh";
+
+            document.body.style.transition = "transform 0.1s ease-in-out";
+            document.body.style.transform = "translateX(10px)";
+
+            setTimeout(() => {
+                document.body.style.transform = "translateX(-10px)";
+            }, 100);
+
+            setTimeout(() => {
+                document.body.style.transform = "translateX(0px)";
+                explosion.style.opacity = "0";
+                showEidCard();
+            }, 800);
+        }
+
+        function showEidCard() {
+            let canvas = document.getElementById("eidCanvas");
+            let ctx = canvas.getContext("2d");
+
+            let img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = "https://raw.githubusercontent.com/Raghad2gh/eid-card-image/main/5971916313444075084_120.jpg";
+
+            img.onload = function () {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+
+                ctx.font = "50px 'Amiri', serif";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+
+                ctx.fillText(userName, canvas.width / 2, canvas.height - 230);
+
+                document.getElementById("page2").style.display = "none";
+                canvas.style.display = "block";
+            };
+        }
+    </script>
+
+</body>
+</html>
+
