@@ -72,6 +72,11 @@
     <!-- صورة المعايدة -->
     <canvas id="eidCanvas"></canvas>
 
+    <!-- زر تحميل الصورة -->
+    <button id="downloadBtn" onclick="downloadImage()" style="display: none; margin-top: 20px; background: green; color: white; padding: 10px 15px; border: none; border-radius: 5px; font-size: 18px; cursor: pointer;">
+        تحميل الصورة 📥
+    </button>
+
     <script>
         let userName = "";
 
@@ -135,22 +140,36 @@
             img.src = "https://raw.githubusercontent.com/Raghad2gh/eid-card-image/main/5971916313444075084_120.jpg";
 
             img.onload = function () {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
+                let maxWidth = window.innerWidth * 0.9; // جعل الصورة مناسبة للجوال
+                let scaleFactor = maxWidth / img.width;
 
-                ctx.font = "50px 'Amiri', serif";
+                canvas.width = maxWidth;
+                canvas.height = img.height * scaleFactor;
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                ctx.font = Math.floor(40 * scaleFactor) + "px 'Amiri', serif";
                 ctx.fillStyle = "white";
                 ctx.textAlign = "center";
 
-                ctx.fillText(userName, canvas.width / 2, canvas.height - 230);
+                ctx.fillText(userName, canvas.width / 2, canvas.height - 50 * scaleFactor);
 
                 document.getElementById("page2").style.display = "none";
                 canvas.style.display = "block";
+
+                // إظهار زر التحميل
+                document.getElementById("downloadBtn").style.display = "block";
             };
+        }
+
+        function downloadImage() {
+            let canvas = document.getElementById("eidCanvas");
+            let link = document.createElement("a");
+            link.download = "eid_card.png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
         }
     </script>
 
 </body>
 </html>
-
